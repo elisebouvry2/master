@@ -399,7 +399,7 @@ button.item.used {
 
   <!-- Aide globale -->
   <div class="help-zone">
-    <h3>Aides et recommandations</h3>
+    <h3></h3>
     <ul id="helpList"></ul>
   </div>
 
@@ -414,6 +414,33 @@ button.item.used {
 </div>
 </div>
 <script>
+
+const labelsExplicites = {
+  "UEPL": "Projet long",
+  "UEPL-PFE": "Projet long - PFE",
+  "UEM1": "Mémoire – partie 1",
+  "UEM2": "Mémoire – partie 2",
+  "UET Intensif": "UET Intensive",
+  "UET Semestre": "UET Semestre",
+  "UEL": "Langue",
+  "UE Pro": "UE Pro",
+  "Stage 309h": "Stage 309h",
+  "Stage 448h": "Stage 448h",
+  "Expérience internationale": "Expérience internationale",
+  "UEPC": "Projet court",
+  "PUX": "UE Culture pro",
+  "PPX": "UE Projections pro",
+  "Stage": "Stage"
+};
+
+function getLabel(nom, ects){
+  const label = labelsExplicites[nom] || nom;
+
+  if(ects === 0) return label;
+
+  return `${label} (${ects} ects)`;
+}
+
 let dragged = null;
 
 function allowDrop(ev){ ev.preventDefault(); }
@@ -631,9 +658,7 @@ ancienneUE.forEach((ue) => {
     btn.id = ue.id;
   }
 
-  btn.innerText = ue.ects === 0 
-    ? ue.nom 
-    : ue.nom + " (" + ue.ects + " ects)";
+  btn.innerText = getLabel(ue.nom, ue.ects);
 
   btn.dataset.nom = ue.nom;
   btn.dataset.ects = ue.ects;
@@ -722,9 +747,7 @@ function afficher(res, intensif, semestre, ueProValidee, intlValidee){
 	  
 	  btn.id = ue.id;
 
-      const label = ue.ects === 0
-  ? ue.name
-  : `${ue.name} (${ue.ects} ects)`;
+      const label = getLabel(ue.name, ue.ects);
 
 btn.innerHTML = "";
 
@@ -864,23 +887,23 @@ function updateHelp(){
     });
 
     if(countUEPL > 1){
-      addHelp("À prendre en compte : il n’est pas possible de suivre deux projets longs au cours d’un même semestre.");
+    //  addHelp("À prendre en compte : il n’est pas possible de suivre deux projets longs au cours d’un même semestre.");
     }
 
     if(countUEL > 1){
-      addHelp("À prendre en compte : il n’est pas possible de suivre deux UE de langue au cours d’un même semestre.");
+    //  addHelp("À prendre en compte : il n’est pas possible de suivre deux UE de langue au cours d’un même semestre.");
     }
 
     if(countUEPLPFE == 1){
-      addHelp("À prendre en compte : il est possible de soutenir le PFE uniquement en fin de parcours (hors stage). L'UE Pro est validé pendant le semestre que le PFE.");
+    //  addHelp("À prendre en compte : il est possible de soutenir le PFE uniquement en fin de parcours (hors stage). L'UE Pro est validé pendant le semestre que le PFE.");
     }
 
     if(countUEM1 == 1 || countUEM2 == 1){
-      addHelp("À prendre en compte : le mémoire se déroule sur deux semestres consécutifs, dont le premier est suivi obligatoirement en présentiel à Nantes.");
+     // addHelp("À prendre en compte : le mémoire se déroule sur deux semestres consécutifs, dont le premier est suivi obligatoirement en présentiel à Nantes.");
     }
 		
     if(block.classList.contains("mobility")){
-      addHelp("À prendre en compte : il est possible de valider un projet long, 1 UET intensif, 2 UET semestre, et une unité de langue au cours du semestre de mobilité.");
+     // addHelp("À prendre en compte : il est possible de valider un projet long, 1 UET intensif, 2 UET semestre, et une unité de langue au cours du semestre de mobilité.");
     }
 
   });
@@ -1265,7 +1288,9 @@ function resetButtonText(btn){
   delete btn.dataset.status;
 
   // récupère le texte d’origine
-  const base = btn.dataset.baseText || btn.innerText;
+const nom = btn.dataset.nom;
+const ects = parseFloat(btn.dataset.ects || 0);
+const base = getLabel(nom, ects);
 
   // reset propre
   btn.innerHTML = "";
